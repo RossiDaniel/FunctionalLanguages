@@ -1,0 +1,27 @@
+1) type of ([True, True], [‘a’,’a’])
+
+[True, True] :: [Bool]
+[‘a’,’a’] :: [Char]
+
+2) type of [tail, init, reverse]
+tail :: [a] -> [a]
+init :: [a] -> [a]
+reverse :: [a] -> [a]
+
+3) write definitions that have the following types:
+bools :: [Bool], nums :: [[Num]], add :: Int ->Int -> Int -> Int
+copy :: a -> (a,a), apply :: (a->b)->a -> b
+
+bools = [True]
+nums = [[0]] non sono sicuro il tipo sparato fuori è :: Num t => [[t]]
+add x y z = z+(x+y) -- add :: Num a => a -> a -> a -> a
+copy x = (x,x) -- copy :: t -> (t, t)
+ciao a = a*2
+apply f a = f a
+
+4) type of following functions:
+swap (x,y) = (y,x) :: (a,b) -> (b,a)
+second xs = head (tail xs) :: [a] -> a
+pair x y = (x,y) :: a -> b -> (a,b)
+palindrome xs = (reverse xs) == xs :: Eq a => [a] -> Bool
+twice f x = f (f x) :: (a -> b) -> c -> b -- lui lo spara fuori solo con le t, probabilmente non  sa indicare alcun tipo
