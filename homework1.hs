@@ -23,8 +23,15 @@ sumDigits (x:xs) = sum (toDigits x) + sumDigits xs
 
 --4)
 --validate :: Integer -> Bool
-validate n = head (f++t)
-             where
-                f = [False | ((sumDigits (doubleEveryOther (toDigits n))) `mod` 10) > 0]
-                t = [True | ((sumDigits (doubleEveryOther (toDigits n))) `mod` 10) == 0]
+
+f 0 = True
+f n = False
+
+validate n = f ((sumDigits (doubleEveryOther (toDigits n))) `mod` 10)
+    
+    
+--head (f++t)
+--       where
+--        f = [False | ((sumDigits (doubleEveryOther (toDigits n))) `mod` 10) > 0]
+--      t = [True | ((sumDigits (doubleEveryOther (toDigits n))) `mod` 10) == 0]
 
