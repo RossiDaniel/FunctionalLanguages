@@ -1,0 +1,24 @@
+2) define the function third in 3 ways:
+a) with head and tail
+b) with !!
+c) pattern matching
+
+third :: [a] -> a
+
+a) third xs = head ( tail ( tail (xs)))
+b) third xs = xs !! 2
+c) third ( _ : ( _ : ( x:_ ))) = x
+
+3) define safetail :: [a]->[a] that behaves like tail except that
+with [], insted of failing, answers []. We can use tail and null ::
+[a] -> Bool that answers True iff the input is an empty list,
+define safetail using:
+a) a conditional expression
+b) guarded equations
+c) pattern matching
+
+a) safetail xs = if null xs then [] else tail xs
+b) safetail xs | null xs   = []
+               | otherwise = tail xs
+c) safetail [] = []
+   safetail (x:_) = x
