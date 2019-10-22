@@ -1,13 +1,12 @@
 module Validate where 
 
-    --1)
+--1)
 toDigits:: Integer -> [Integer]
 toDigits n | n <= 0     = []
            | otherwise  = toDigits (n`div`10) ++ [n`mod`10]
 
 toDigitsRev :: Integer -> [Integer]
 toDigitsRev n = reverse (toDigits n)
---toDigits 1234 == [1,2,3,4]
 
 --2)
 doubleEveryOther :: [Integer] -> [Integer]
