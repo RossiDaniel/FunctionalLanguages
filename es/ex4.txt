@@ -1,0 +1,23 @@
+4) define function replicate :: Int -> a -> [a]
+replicate 3 True
+[True,True,True]
+
+replicate :: Int -> a -> [a]
+replicate n a = [a | x <- [0..n]]
+
+5)A triple (x,y,z) is Pythagorean when x^2 + y^2 ==z^2, write a
+function that computes a list of all Pythagorean triples whole
+elements are at most a given n
+
+pythagorean n = [(x,y,z) | x <- [1..n], y<- [1..n], z<- [1..n], x^2+y^2 == z^2]
+
+6) A positive integer is perfect if it equals the sum of its factors
+(excluding the number self), define perfects :: Int ->[Int] that,
+given n, computes the list of all perfect numbers in [1..n]
+
+perfect n = [z | z <- [1..n], sum [y| y<- [1..z-1], z `mod` y == 0] == z]
+
+7) Show that [(x,y) | x <- [1,2], y <-[3,4]] can be re-expressed with 2
+comprehensions with single generators
+
+[[(x,y) | x <- [1,2]] y <-[3,4]]
