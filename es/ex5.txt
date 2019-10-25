@@ -1,0 +1,20 @@
+
+
+twice :: (a -> a) -> a -> a
+twice f = f.f
+
+map' f = []
+
+2)
+a) all :: (a -> Bool) -> [Bool] -> Bool
+
+foldr  True (x:xs)
+
+foldr f v [] = v
+foldr f v (x:xs) = f x (foldr f v xs)
+
+takeWhile' :: (a -> Bool) -> [a] -> [a]
+takeWhile' f [] = []
+takeWhile' f (x:xs) | f x       = x:takeWhile' f xs
+                    | otherwise = takeWhile' f xs
+

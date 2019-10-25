@@ -20,4 +20,26 @@ perfect n = [z | z <- [1..n], sum [y| y<- [1..z-1], z `mod` y == 0] == z]
 7) Show that [(x,y) | x <- [1,2], y <-[3,4]] can be re-expressed with 2
 comprehensions with single generators
 
-[[(x,y) | x <- [1,2]] y <-[3,4]]
+concat [[(x,y) | x <- [1,2]]| y <-[3,4]]
+
+Exercise 9
+using the 5 steps process, construct the library functions
+sum
+take
+last
+
+sum' :: Num a => [a] -> a
+
+sum' [] = 0
+sum' (x:xs) = x + sum' xs
+
+take :: Int -> [a] -> [a]
+
+take' _ [] = []
+take' 0 _ = []
+take' n (x:xs) = x : take' (n-1) xs
+
+
+last' :: [a] -> a
+last' (x:xs) | (lenght xs) == 0 = x
+             | otherwise        = last' xs
