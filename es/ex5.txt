@@ -6,15 +6,60 @@ twice f = f.f
 map' f = []
 
 2)
-a) all :: (a -> Bool) -> [Bool] -> Bool
+all' :: (a -> Bool) -> [a] -> Bool
+all' f = (and) . map f
 
-foldr  True (x:xs)
-
-foldr f v [] = v
-foldr f v (x:xs) = f x (foldr f v xs)
+any' :: (a -> Bool) -> [a] -> Bool
+any' f = or . map f
 
 takeWhile' :: (a -> Bool) -> [a] -> [a]
 takeWhile' f [] = []
 takeWhile' f (x:xs) | f x       = x:takeWhile' f xs
                     | otherwise = takeWhile' f xs
 
+dropWhile' :: (a -> Bool) -> [a] -> [a]
+dropWhile' f [] = []
+dropWhile' f (x:xs) | f x       = takeWhile' f xs
+                    | otherwise = x:takeWhile' f xs
+
+3)
+
+map' :: (a -> b) -> [a] -> [b]
+map' f [] = []
+map' f (x:xs) = f x : map' f xs
+
+map'' :: (a->b) -> [a] -> [b]
+map'' f = foldr (\ x xs -> f x : xs) []
+
+filter' f = foldr (\ x xs -> if f x then x:xs else xs) []
+
+4)
+dec2int :: [Int] -> Int
+dec2int = foldl (\x y -> (10*x) + y) 0
+
+
+ex)
+sum'' :: [Int] -> Int
+sum'' = foldl (+) 0 
+
+foldl' f v [] = v
+foldl' f v (x:xs) = foldl' f (f v x) xs
+
+reverse' xs = foldl' (\x y -> y:x) [] xs
+
+5)
+curry' :: ((x,y) -> z) -> (x -> y -> z)
+curry' f = \x y -> f (x,y)
+
+uncurry' :: (x -> y -> z) -> ((x,y) -> z)
+uncurry' f = \ (x,y) -> f x y
+
+6)
+type Bit = Int
+
+--unfold :: ([a] -> Bool) -> ([a] -> [a]) -> ([a] -> [a]) -> [a] -> [a]
+unfold p h t x | p x       = []
+               | otherwise = h x : unfold p h t (t x)
+
+chop8 :: [Bit] -> [[Bit]]
+chop8 = unfold (== []) (take 8) (drop 8)
