@@ -6,8 +6,14 @@ twice f = f.f
 map' f = []
 
 2)
+
 all' :: (a -> Bool) -> [a] -> Bool
 all' f = (and) . map f
+
+all'' f = foldr (\ x y -> (f x) && y) True
+
+all''' _ [] = True
+all''' f (x:xs) = (f x) && (all''' f xs)
 
 any' :: (a -> Bool) -> [a] -> Bool
 any' f = or . map f
