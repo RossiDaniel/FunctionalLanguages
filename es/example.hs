@@ -1,38 +1,38 @@
-data Move = North | South | East | West
-            deriving Show
+data Nat = Zero | Succ Nat
 
-type Pos = (Int , Int)
-        
-move :: Move -> Pos -> Pos
-move North (x,y) = (x,y+1)
-move South (x,y) = (x, y-1)
-move East (x,y) = (x+1,y)
-move West (x,y) = (x-1,y)
+add :: Nat -> Nat -> Nat
 
-mov :: [Move]
-mov = [West,North,East,East,East,East,East,East,East,North]
+add Zero n = n
+add (Succ m) n = Succ (add m n)
 
-moves [] p = p
-moves (x:xs) p = moves xs (move x p)
+molt :: Nat -> Nat -> Nat
+molt Zero n = Zero
+molt (Succ m) n = add (molt m n) n
 
-moves' :: [Move] -> Pos -> Pos
-moves' xs p = foldl (\a b -> move b a) p xs
+data Tree a = Leaf a | Node (Tree a) (Tree a)
 
-sum' p xs = foldr' (+) 0 xs
+balance :: [a] -> Tree a
+balance [x] = Leaf x
+balance xs  = Node (balance l1) (balance l2)
+            where
+             l1 = [x | (x,y) <- (zip xs [0..(length xs)]) , even y]
+             l2 = [x | (x,y) <- (zip xs [0..(length xs)]) , odd  y]
 
-foldr' p v [] = v
-foldr' p v (x:xs) = p x (foldr' p v xs) 
 
-foldl' p v [] = v
-foldl' p v (x:xs) = foldl' p (p v x) xs
+map' :: (a->b) -> [a] -> [b]
 
-moves2 :: [Move] -> Pos -> Pos
-moves2 = foldr (\ a b -> (\x -> b (move a x) )) id
+map' f xs = foldr (\y ys -> (f y):ys) [] xs
 
-ciao = (\ a b -> (\x -> b (move a x) ))
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' f xs  = foldr (\y ys -> [y | f y] ++ ys) [] xs
+--(v # (f x # ()))
 
-data Shape = Circle Float | Rect Float Float
-data Ciao = Hello | Ciaone 
+all' :: (a -> Bool) -> [a] -> Bool
+all' f xs = foldr (\y r -> (f y) && r) True xs
 
-square :: Float -> Shape
-square n = Rect n n
+length' :: [a] -> Int
+length' [] = 0
+length' (x:xs) = 1 + length' xs
+
+dec2int :: [Int] -> Int
+dec2int xs = foldl (\ x y -> x*10+y ) 0 xs

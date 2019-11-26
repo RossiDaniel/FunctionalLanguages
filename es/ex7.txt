@@ -1,0 +1,133 @@
+data Move = North | South | East | West
+            deriving Show
+
+type Pos = (Int , Int)
+        
+move :: Move -> Pos -> Pos
+move North (x,y) = (x,y+1)
+move South (x,y) = (x, y-1)
+move East (x,y) = (x+1,y)
+move West (x,y) = (x-1,y)
+
+mov :: [Move]
+mov = [West,North,East,East,East,East,East,East,East,North]
+
+moves [] p = p
+moves (x:xs) p = moves xs (move x p)
+
+moves' :: [Move] -> Pos -> Pos
+moves' xs p = foldl (\a b -> move b a) p xs
+
+sum' p xs = foldr' (+) 0 xs
+
+foldr' p v [] = v
+foldr' p v (x:xs) = p x (foldr' p v xs) 
+
+foldl' p v [] = v
+foldl' p v (x:xs) = foldl' p (p v x) xs
+
+moves2 :: [Move] -> Pos -> Pos
+moves2 = foldr (\ a b -> (\x -> b (move a x) )) id
+
+ciao = (\ a b -> (\x -> b (move a x) ))
+
+data Shape = Circle Float | Rect Float Float
+data Ciao = Hello | Ciaone 
+
+square :: Float -> Shape
+square n = Rect n n
+
+savediv :: Int -> Int -> Maybe Int
+savediv _ 0 = Nothing
+safediv x y = Just( x`div`y )
+
+data Nat = Zero | Succ Nat
+
+nat2int :: Nat -> Int
+nat2int Zero =0
+nat2int (Succ n) = 1 + nat2int n
+
+int2nat :: Int -> Nat
+int2nat 0 = Zero
+int2nat m = Succ (int2nat (m-1))
+
+add:: Nat -> Nat -> Nat
+add x y = int2nat( (nat2int x) + (nat2int y))
+
+add':: Nat -> Nat -> Nat
+add' Zero n = n
+add' (Succ m) n = Succ (add' m n)
+
+data List a = Nil | Cons a (List a)
+
+len :: List a -> Int
+len Nil = 0
+len (Cons _ xs) = 1 + len xs
+
+data Tree a = Leaf a | Node (Tree a) a (Tree a)
+
+occurs :: Eq a => a -> Tree a -> Bool
+occurs x (Leaf y) = x == y
+occurs x (Node l y r) = (x == y) || (occurs x l) || (occurs x r)
+
+flatten :: Tree a -> [a]
+flatten (Leaf x) = [x]
+flatten (Node l x r) = (flatten l) ++ [x] ++ (flatten r)
+
+occurs' :: Ord a => a -> Tree a -> Bool
+occurs' x (Leaf y) = x == y
+occurs' x (Node l y r) | x == y = True
+                       | x < y = occurs' x l
+                       | otherwise = occurs' x r
+
+
+sbin :: [Bool] -> [Bool]
+sbin [] = [True]
+sbin (x:xs) | x == False = True:xs
+            | otherwise  = False:(sbin xs)
+
+int2bin :: Int  -> [Bool]
+int2bin 0 = [False]
+int2bin n = sbin ( int2bin (n-1) )
+
+bool2int :: [Bool] -> [Int]
+bool2int [] = []
+bool2int (x:xs) | x == True = 1:bool2int xs
+                | otherwise = 0:bool2int xs
+
+length' :: [a] -> Int
+length' xs = sum [1 | x<-xs]
+
+bin2int :: [Bool] -> Int
+bin2int xs = sum [x * (2^y) | (x,y) <- zip (bool2int xs) [0..(length' xs)]] 
+
+
+1) define molt like add
+
+
+data Nat = Zero | Succ Nat
+
+add :: Nat -> Nat -> Nat
+
+add Zero n = n
+add (Succ m) n = Succ (add m n)
+
+molt :: Nat -> Nat -> Nat
+molt Zero n = Zero
+molt (Succ m) n = add (molt m n) n
+
+2) it is more efficently because it visit only middle of the three, so it find the occurration of term in log n time
+
+3)
+data Tree a = Leaf a | Node (Tree a) (Tree a)
+
+nleaves :: Tree a -> Int
+nleaves (Leaf n) = 1
+nleaves (Node l r) = (nleaves l) + (nleaves r)
+
+balanced :: Tree a -> Bool
+balanced (Leaf n) = True
+balanced (Node l r) | abs ((nleaves l) - (nleaves r)) <= 1 = True
+                    | otherwise                            = False
+
+4) 

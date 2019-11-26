@@ -36,3 +36,41 @@ data Ciao = Hello | Ciaone
 
 square :: Float -> Shape
 square n = Rect n n
+
+triplo :: (a->a) -> a -> a
+triplo f = f.f.f
+
+map' :: (a->b) -> [a] -> [b]
+map' f xs = [f x | x <- xs]
+
+map'' :: (a->b) -> [a] -> [b]
+map'' _ [] = []
+map'' f (x:xs) = (f x): (map'' f xs)
+
+filter' :: (a->Bool) -> [a] -> [a]
+filter' _ [] = []
+filter' f (x:xs) | (f x) == True = x:filter' f xs
+                 | otherwise     = filter' f xs
+
+filter'' :: (a->Bool) -> [a] -> [a]
+filter'' f xs = [x | x<- xs, f x]
+
+foldr' :: (a-> b-> b) -> b -> [a] -> b
+foldr' _ v [] = v
+foldr' f v (x:xs) = f x (foldr' f v xs)
+
+length' :: [a] -> Int
+length' xs = foldr' (\x y -> y+1) 0 xs
+
+reverse' :: [a] -> [a]
+reverse' xs = foldr' (\ w z -> z ++ [w])  [] xs
+
+foldl' :: (a -> b -> a) -> a -> [b] -> a
+foldl' _ v [] = v
+foldl' f v (x:xs) = foldl' f (f v x) xs
+
+--composition
+
+(.) :: (a -> b) -> (c -> a) -> (c -> b)
+f . g = \x -> f (g x)
+
