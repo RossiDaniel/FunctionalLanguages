@@ -1,38 +1,38 @@
-data Nat = Zero | Succ Nat
-
-add :: Nat -> Nat -> Nat
-
-add Zero n = n
-add (Succ m) n = Succ (add m n)
-
-molt :: Nat -> Nat -> Nat
-molt Zero n = Zero
-molt (Succ m) n = add (molt m n) n
-
-data Tree a = Leaf a | Node (Tree a) (Tree a)
-
-balance :: [a] -> Tree a
-balance [x] = Leaf x
-balance xs  = Node (balance l1) (balance l2)
-            where
-             l1 = [x | (x,y) <- (zip xs [0..(length xs)]) , even y]
-             l2 = [x | (x,y) <- (zip xs [0..(length xs)]) , odd  y]
+data Ciao a = Ciau a | Ciauz (Ciao a) a (Ciao a) deriving Show
 
 
-map' :: (a->b) -> [a] -> [b]
+data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
 
-map' f xs = foldr (\y ys -> (f y):ys) [] xs
+sumtree :: Num a => Tree a -> a
+sumtree (Leaf x) = x
+sumtree (Node l n r) = (sumtree l) + n + (sumtree r)
 
-filter' :: (a -> Bool) -> [a] -> [a]
-filter' f xs  = foldr (\y ys -> [y | f y] ++ ys) [] xs
---(v # (f x # ()))
+tree :: Num a=> Tree a
+tree = Node (Leaf 1) 2 (Leaf 2)
 
-all' :: (a -> Bool) -> [a] -> Bool
-all' f xs = foldr (\y r -> (f y) && r) True xs
+ciauz :: Num a=> Ciao a
+ciauz = Ciauz (Ciau 1) 4 (Ciau 2)
 
-length' :: [a] -> Int
-length' [] = 0
-length' (x:xs) = 1 + length' xs
+instance Functor Ciao where
+    fmap f (Ciau x) = Ciau (f x)
+    fmap f (Ciauz l n r) = Ciauz (fmap f l) (f n) (fmap f r)
 
-dec2int :: [Int] -> Int
-dec2int xs = foldl (\ x y -> x*10+y ) 0 xs
+class Functor1 f where
+    fmap0 :: (a -> b -> c) -> f a -> f b -> f c 
+
+instance Functor1 Ciao where
+    fmap0 f (Ciau x) (Ciau y) = Ciau (f x y)
+    fmap0 f (Ciauz l n r) (Ciauz ll nn rr) = Ciauz (fmap0 f l ll) (f n nn) (fmap0 f r rr) 
+
+sbin :: [Bool] -> [Bool]
+sbin [] = [True]
+sbin (x:xs) | x == False = True:xs
+            | otherwise  = False:(sbin xs)
+
+int2bin :: Int  -> [Bool]
+int2bin 0 = [False]
+int2bin n = sbin ( int2bin (n-1) )
+
+ciauzzone :: Int -> Int -> [Bool]
+ciauzzone x y = int2bin (x+y)
+
