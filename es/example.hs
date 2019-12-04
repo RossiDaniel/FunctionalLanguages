@@ -81,3 +81,50 @@ instance Applicative Test where
 test1 :: Num a => Test a
 test1 = Tnode (Tnode (Tleaf (5)) (Tleaf 5)) (Tnode (Tleaf 5) (Tleaf 5))
 
+
+data Expr = Val Int | Div Expr Expr
+
+eval :: Expr -> Int
+eval (Val n) = n
+eval (Div x y) = (eval x) `div` (eval y)
+
+safediv :: Int -> Int -> Maybe Int
+safediv _ 0 = Nothing
+safediv x y = Just (x `div` y)
+
+eval' :: Expr -> Maybe Int 
+eval' (Val n) = Just n
+eval' (Div x y) = case eval' x of 
+                     Nothing -> Nothing
+                     Just n -> case eval' y of 
+                                  Nothing -> Nothing
+                                  Just m -> safediv n m
+
+--eval'' :: Expr -> Maybe Int
+--eval'' (Val n) = pure n
+--eval'' (Div x y) = pure safediv <*> eval'' x <*> eval'' y
+--non funziona perché safediv è di tipo Int -> Int -> Maybe Int mentre la funzione che vogliamo noi deve essere del tipo Int -> Int -> Int così che poi venga inserita dentro la struttura dati Maybe come segue Maybe (Int -> Int -> Int)
+
+eval'' :: Expr -> Maybe Int
+eval'' (Val n) = Just n
+eval'' (Div x y) = eval'' x >>= \n ->
+                   eval'' y >>= \m -> 
+                   safediv n m
+
+evall :: Expr -> Maybe Int 
+evall (Val n) = Just n
+evall (Div x y) = do n <- evall x
+                     m <- evall y
+                     safediv n m
+
+data Alb a = Foia | Nodo (Alb a) a (Alb a) deriving Show
+
+instance Functor Alb where
+    fmap f (Foia) = Foia
+    fmap f (Nodo l n r) = Nodo (fmap f l) (f n) (fmap f r)
+instance Applicative Alb where
+    pure x = 
+-- (>>=) :: Alb a -> (a -> Alb b) -> Alb b
+instance Monad Alb where 
+    (Foia) >>= _ = Foia
+    (Nodo l n r) >>= f = f n
