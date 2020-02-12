@@ -1,3 +1,5 @@
+module Parser where
+
 import Control.Applicative
 import Data.Char
 
@@ -112,7 +114,7 @@ string (x:xs) = do i <- char x
 ident :: Parser String 
 --ident = lower >>= (\x -> many alphanum >>= (\xs -> return (x:xs)))
 ident = do x <- lower
-           xs <- many alphanum
+           xs <- many alphanum  
            return (x:xs)
 
 nat :: Parser Int
@@ -139,3 +141,59 @@ token p = do space
              x <- p
              space 
              return x
+
+identifier :: Parser String
+identifier = token ident
+
+natural :: Parser Int
+natural = token nat
+
+integer :: Parser Int
+integer = token int
+
+symbol :: String -> Parser String
+symbol xs = token (string xs)
+
+{--
+nats :: Parser [Int]
+nats = do symbol "["
+          n <- natural
+          ns <- many (do symbol "," 
+                         natural)
+          symbol "]"
+          return (n:ns)
+
+-- arithmetic expressions
+-- expr ::= term (+ expr | e)
+-- term ::= factor (* term | e)
+-- factor ::= (expr) | nat
+-- nat ::= 0 | 1 | 2 | ..
+
+expr :: Parser Int
+expr = do x <- term
+          do symbol "+"
+             y <- expr
+             return (x + y)
+           <|> return x
+
+
+term :: Parser Int
+term = do x <- factor
+          do symbol "*"
+             y <- term
+             return (x * y)
+           <|> return x
+
+factor :: Parser Int
+factor = do symbol "("
+            x <- expr
+            symbol ")"
+            return x
+          <|> natural 
+
+eval :: String -> Int
+eval xs = case (parse expr xs) of
+               [(n,[])] -> n
+               [(_,out)] -> error ("Unused input " ++ out)
+               [] -> error ("Invalid syntax")
+--}

@@ -1,4 +1,4 @@
-type State = Int 
+x\type State = Int 
 
 newtype ST a = S (State -> (a,State))
 
