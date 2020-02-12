@@ -41,36 +41,26 @@ parseScDef = do v <- parseVar
                 return (v, pf, body)
 
 parseExpr :: Parser (Expr Name)
-parseExpr = do x <- parseLet
-               return x
-            <|> do x <- parseLetrec
-                   return x
-            <|> do x <- parseCase
-                   return x
-            <|> do x <- parseLam
-                   return x
-            <|> do x <- parseAExpr
-                   return x
-            <|> do x <- parseExpr1
-                   return x
+parseExpr = do parseLet <|> parseLetrec <|> parseCase <|> parseLam <|> parseExpr1
 
 parseAExpr :: Parser (Expr Name)
-parseAExpr = do e <- parseVar
-                return (Evar e)
-             <|> do x <- natural
-                    return (Enum x)
-             <|> do symbol "Pack{"
-                    n <- natural
-                    symbol ","
-                    m <- natural 
-                    symbol "}"
-                    return (EConstr n m) 
-             <|> do symbol "("
-                    e <- parseExpr
-                    symbol ")"
-                    return e
-                 
-
+parseAExpr = do parseKeyword
+                do e <- parseVar
+                   return (Evar e)
+                 <|> do x <- natural
+                        return (Enum x)
+                 <|> do symbol "Pack{"
+                        n <- natural
+                        symbol ","
+                        m <- natural 
+                        symbol "}"
+                        return (EConstr n m) 
+                 <|> do symbol "("
+                        e <- parseExpr
+                        symbol ")"
+                        return e
+                 <|> empty
+                
 parseLet :: Parser (Expr Name)
 parseLet = do symbol "let"
               d <- parseDefns
@@ -196,4 +186,8 @@ parseExpr6 = do ae <- parseAExpr
                    return (Eap ae e6)
                  <|> return ae
 
-              
+
+parseKeyword :: Parser String
+parseKeyword = P(\inp -> case parse (symbol "in" <|> symbol "case" <|> symbol "let" <|> symbol "letric" <|> symbol "of" <|> empty) inp of
+                            [] -> [("",inp)]
+                            [(v,out)] -> [])

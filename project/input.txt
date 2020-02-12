@@ -1,5 +1,4 @@
-f = 3;
-g x y = let z = x in z;
-h x = case (let y = x in y) of
-<1> -> 2;
-<2> -> 5
+f a b c = a * b - c | a & b / 2;
+g a b = case a of 
+<1> -> a& b & c;
+<2> c d -> a - b * c / d

@@ -197,3 +197,14 @@ eval xs = case (parse expr xs) of
                [(_,out)] -> error ("Unused input " ++ out)
                [] -> error ("Invalid syntax")
 --}
+
+
+down :: Parser ()
+down = do many (sat (== '\n'))
+          return ()
+
+supertoken :: Parser a -> Parser a
+supertoken p = do down <|> space
+                  x <- p
+                  down <|> space
+                  return x
