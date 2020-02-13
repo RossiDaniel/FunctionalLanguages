@@ -1,7 +1,6 @@
 module ParseProg where
 import Control.Applicative
 
-import Parser
 type Name = String
 type Def a = (a, Expr a)
 type Alter a = (Int, [a], Expr a)
@@ -12,18 +11,18 @@ type ScDefn a = (Name, [a], Expr a)
 type CoreScDefn = ScDefn Name
 
 data Expr a
-  =  Evar Name
-   | Enum Int
+  =  EVar Name
+   | ENum Int
    | EConstr Int Int
-   | Eap (Expr a) (Expr a)
-   | Elet
+   | EAp (Expr a) (Expr a)
+   | ELet
         IsRec
         [(a,Expr a)]
         (Expr a)
    | ECase 
         (Expr a)
         [Alter a]
-   | Elam [a] (Expr a)
+   | ELam [a] (Expr a)
     deriving Show
 
 parseProg :: Parser (Program Name)
@@ -46,9 +45,9 @@ parseExpr = do parseLet <|> parseLetrec <|> parseCase <|> parseLam <|> parseExpr
 parseAExpr :: Parser (Expr Name)
 parseAExpr = do parseKeyword
                 do e <- parseVar
-                   return (Evar e)
+                   return (EVar e)
                  <|> do x <- natural
-                        return (Enum x)
+                        return (ENum x)
                  <|> do symbol "Pack{"
                         n <- natural
                         symbol ","
@@ -66,14 +65,14 @@ parseLet = do symbol "let"
               d <- parseDefns
               symbol "in"
               e <- parseExpr
-              return (Elet NonRecursive d e)
+              return (ELet NonRecursive d e)
 
 parseLetrec :: Parser (Expr Name)
 parseLetrec = do symbol "letrec"
                  d <- parseDefns
                  symbol "in"
                  e <- parseExpr
-                 return (Elet Recursive d e)
+                 return (ELet Recursive d e)
 
 parseDefn :: Parser (Def Name)
 parseDefn = do v <- identifier
@@ -115,7 +114,7 @@ parseLam = do symbol "\\"
               as <- many (do identifier)
               symbol "."
               e <- parseExpr
-              return (Elam (a:as) e)
+              return (ELam (a:as) e)
 
 parseVar:: Parser String
 parseVar = token var
@@ -129,61 +128,61 @@ parseExpr1:: Parser (Expr Name)
 parseExpr1 = do e2 <- parseExpr2 
                 do symbol "|"
                    e1 <- parseExpr1
-                   return (Eap (Eap (Evar "|") e2) e1)
+                   return (EAp (EAp (EVar "|") e2) e1)
                  <|> return e2
 
 parseExpr2:: Parser (Expr Name)
 parseExpr2 = do e3 <- parseExpr3 
                 do symbol "&"
                    e2 <- parseExpr2
-                   return (Eap (Eap (Evar "&") e3) e2)
+                   return (EAp (EAp (EVar "&") e3) e2)
                  <|> return e3
 
 parseExpr3:: Parser (Expr Name)
 parseExpr3 = do e4 <- parseExpr4
                 do r <- parseRelop
                    e4' <- parseExpr4
-                   return (Eap (Eap r e4) e4')
+                   return (EAp (EAp r e4) e4')
                  <|> return e4
 
 parseRelop :: Parser (Expr Name)
 parseRelop = do symbol "<"
-                return (Evar "<")
+                return (EVar "<")
              <|> do symbol "<="
-                    return (Evar "<=")
+                    return (EVar "<=")
              <|> do symbol "=="
-                    return (Evar "==")
+                    return (EVar "==")
              <|> do symbol "~="
-                    return (Evar "~=")
+                    return (EVar "~=")
              <|> do symbol ">="
-                    return (Evar ">=")
+                    return (EVar ">=")
              <|> do symbol ">"
-                    return (Evar ">")
+                    return (EVar ">")
 
 parseExpr4:: Parser (Expr Name)
 parseExpr4 = do e5 <- parseExpr5
                 do symbol "+"
                    e4 <- parseExpr4
-                   return (Eap (Eap (Evar "+") e5) e4)
+                   return (EAp (EAp (EVar "+") e5) e4)
                  <|> do symbol "-"
                         e5' <- parseExpr5
-                        return (Eap (Eap (Evar "-") e5) e5')
+                        return (EAp (EAp (EVar "-") e5) e5')
                  <|> return e5
 
 parseExpr5 :: Parser (Expr Name)
 parseExpr5 = do e6 <- parseExpr6
                 do symbol "*"
                    e5 <- parseExpr5
-                   return (Eap (Eap (Evar "*") e6) e5)
+                   return (EAp (EAp (EVar "*") e6) e5)
                  <|> do symbol "/"
                         e6' <- parseExpr6
-                        return (Eap (Eap (Evar "/") e6) e6')
+                        return (EAp (EAp (EVar "/") e6) e6')
                  <|> return e6
 
 parseExpr6 :: Parser (Expr Name)
 parseExpr6 = do ae <- parseAExpr
                 do e6 <- parseExpr6
-                   return (Eap ae e6)
+                   return (EAp ae e6)
                  <|> return ae
 
 
