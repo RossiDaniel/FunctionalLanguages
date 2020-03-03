@@ -1,14 +1,14 @@
 module ParseProg where
 import Control.Applicative
-
+import Parse
 type Name = String
 type Def a = (a, Expr a)
 type Alter a = (Int, [a], Expr a)
-data IsRec = NonRecursive | Recursive deriving Show
-type Program a = [ScDefn a]
+data IsRec = NonRecursive | Recursive deriving (Eq,Show)
+type Program a = [ScDef a]
 type CoreProgram = Program Name
-type ScDefn a = (Name, [a], Expr a)
-type CoreScDefn = ScDefn Name
+type ScDef a = (Name, [a], Expr a)
+type CoreScDefn = ScDef Name
 
 data Expr a
   =  EVar Name
@@ -32,7 +32,7 @@ parseProg = do p <- parseScDef
                   return (p:ps)
                 <|> return [p]
 
-parseScDef :: Parser (ScDefn Name)
+parseScDef :: Parser (ScDef Name)
 parseScDef = do v <- parseVar
                 pf <- many parseVar
                 char '='
@@ -40,7 +40,7 @@ parseScDef = do v <- parseVar
                 return (v, pf, body)
 
 parseExpr :: Parser (Expr Name)
-parseExpr = do parseLet <|> parseLetrec <|> parseCase <|> parseLam <|> parseExpr1
+parseExpr = parseLet <|> parseLetrec <|> parseCase <|> parseLam <|> parseExpr1
 
 parseAExpr :: Parser (Expr Name)
 parseAExpr = do parseKeyword
@@ -187,6 +187,6 @@ parseExpr6 = do ae <- parseAExpr
 
 
 parseKeyword :: Parser String
-parseKeyword = P(\inp -> case parse (symbol "in" <|> symbol "case" <|> symbol "let" <|> symbol "letric" <|> symbol "of" <|> empty) inp of
+parseKeyword = P(\inp -> case parse (symbol "in" <|> symbol "case" <|> symbol "let" <|> symbol "letrec" <|> symbol "of" <|> empty) inp of
                             [] -> [("",inp)]
                             [(v,out)] -> [])
