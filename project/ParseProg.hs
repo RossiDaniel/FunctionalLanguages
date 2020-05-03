@@ -180,11 +180,8 @@ parseExpr5 = do e6 <- parseExpr6
                  <|> return e6
 
 parseExpr6 :: Parser (Expr Name)
-parseExpr6 = do ae <- parseAExpr
-                do e6 <- parseExpr6
-                   return (EAp ae e6)
-                 <|> return ae
-
+parseExpr6 = do (a:as) <- some parseAExpr
+                return (foldl (\x y -> EAp x y) a as)
 
 parseKeyword :: Parser String
 parseKeyword = P(\inp -> case parse (symbol "in" <|> symbol "case" <|> symbol "let" <|> symbol "letrec" <|> symbol "of" <|> empty) inp of
